@@ -30,6 +30,8 @@ interface RosterItem {
     team: string | null;
     injury_status: string;
     injury_notes: string;
+    keeper_years_accumulated?: number;
+    is_kept_year_2?: boolean;
     projections: PlayerProjection[];
   };
 }
@@ -95,6 +97,8 @@ export default function TradeRadarPage() {
             team,
             injury_status,
             injury_notes,
+            keeper_years_accumulated,
+            is_kept_year_2,
             projections:player_projections (
               season_fppg,
               projected_adp,
@@ -120,14 +124,18 @@ export default function TradeRadarPage() {
         fpts: 0,
       };
       const originalRound = item.draft_round || 12;
-      const tenureYears = item.keeper_years_accumulated || 0;
+      const playerObj = item.player;
+      const tenureYears = (playerObj?.keeper_years_accumulated != null && playerObj.keeper_years_accumulated > 0)
+        ? playerObj.keeper_years_accumulated
+        : (item.keeper_years_accumulated || 0);
+      const isKeptYear2 = Boolean(playerObj?.is_kept_year_2 || item.is_kept_year_2);
       const pos = item.player?.position || 'WR';
 
       // Year 1 keeps at exact cost; Year 2 keeps escalate 1 round
       const costRound = tenureYears === 1 ? Math.max(1, originalRound - 1) : originalRound;
 
       const isIneligibleRound = originalRound <= 2;
-      const isOverTenure = tenureYears >= 2 || item.is_kept_year_2;
+      const isOverTenure = tenureYears >= 2 || isKeptYear2;
       const isEligible = !isIneligibleRound && !isOverTenure;
 
       const gp = proj.gp || 0;
