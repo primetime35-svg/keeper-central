@@ -68,7 +68,7 @@ function normalizeName(str: string): string {
   let cleaned = str.toLowerCase()
     .replace(/\b(jr|sr|ii|iii|iv|v)\b/gi, '')
     .replace(/\b(d\/st|dst)\b/gi, '')
-    .replace(/[.'’]/g, '')
+    .replace(/[^a-z0-9\s]/gi, '')
     .trim()
     .replace(/\s+/g, ' ');
 
@@ -127,6 +127,12 @@ export async function GET() {
       );
     }
 
+      const { data: consensusData } = await supabase.from('consensus_adp').select('normalized_name, consensus_adp');
+      const consensusMap = new Map<string, number>(
+        (consensusData || []).map((row: any) => [row.normalized_name, Number(row.consensus_adp)])
+      );
+      console.log('[SYNC] Loaded consensus ADP map successfully');
+
     const [playersRes, statsRes] = await Promise.all([
       fetch('https://api.sleeper.app/v1/players/nfl'),
       fetch('https://api.sleeper.app/v1/stats/nfl/regular/2026')
@@ -165,7 +171,7 @@ export async function GET() {
         ? 'Practice Squad'
         : (pInfo.injury_status || (pInfo.status === 'Inactive' ? 'Inactive' : 'Healthy'));
       const injuryNotes = pInfo.injury_notes || pInfo.injury_body_part || 'Active';
-      const expertAdp = PRESEASON_EXPERT_ADP_2026[normKey] || (isDefense || pos === 'K' ? 160 : 180);
+      const expertAdp = consensusMap.get(normKey) || PRESEASON_EXPERT_ADP_2026[normKey] || (isDefense || pos === 'K' ? 160 : 180);
 
       if (!isDefense && pos !== 'K' && pts === 0 && expertAdp >= 180 && !pInfo.team) continue;
 
