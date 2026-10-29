@@ -1,4 +1,4 @@
-﻿export interface PlayerStats {
+export interface PlayerStats {
   id: string;
   name: string;
   pos: 'QB' | 'RB' | 'WR' | 'TE' | 'K' | 'DST' | 'DEF';
@@ -61,11 +61,11 @@ export function calculateRosTradeValue(
 
   // 1. Definite Season-Ending or Practice Squad -> True $0
   const isSeasonEnding =
-    normNotes.includes('out for season') ||
+    (normNotes.includes('out for season') ||
     normNotes.includes('season-ending') ||
     normNotes.includes('torn acl') ||
     normNotes.includes('torn achilles') ||
-    normNotes.includes('pup-r');
+    normNotes.includes('pup-r')) || ((normStatus === "ir" || normStatus.includes("ir")) && normNotes.includes("surgery"));
 
   const isPracticeSquad =
     normStatus.includes('practice squad') ||
