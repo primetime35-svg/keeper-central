@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { KeeperSurplusBadge } from '@/components/KeeperSurplusBadge';
 import { SyncEspnButton } from '@/components/SyncEspnButton';
@@ -379,32 +379,17 @@ export default async function DashboardPage(props: {
                             </div>
                           </td>
 
-                        <td className="py-3 px-4 font-mono font-bold">
-                            {!row.isEligible ? (
-                              <span className="text-rose-400 text-xs font-normal">
-                                {row.ineligibilityReason}
-                              </span>
-                            ) : hasPositiveSurplus && row.keeperBreakdown ? (
-                              <KeeperSurplusBadge breakdown={row.keeperBreakdown} />
-                            ) : (
-                              <span className="text-slate-500 font-normal text-xs"><td className="py-3 px-4 font-mono font-bold">
-                          {row.isEligible ? (
-                            hasPositiveSurplus ? (
-                              <span className="text-emerald-400">
-                                {formatCurrency(row.surplusEquity,
-        keeperBreakdown, true)}
-                              </span>
-                            ) : (
-                              <span className="text-slate-500 font-normal">$0</span>
-                            )
-                          ) : (
-                            <span className="text-rose-400 text-xs font-normal">
-                              {row.ineligibilityReason}
-                            </span>
-                          )}
-                        </td></span>
-                            )}
-                          </td>
+                         <td className="py-3 px-4 font-mono font-bold">
+                           {!row.isEligible ? (
+                             <span className="text-rose-400 text-xs font-normal">
+                               {row.ineligibilityReason}
+                             </span>
+                           ) : hasPositiveSurplus && row.keeperBreakdown ? (
+                             <KeeperSurplusBadge breakdown={row.keeperBreakdown} />
+                           ) : (
+                             <span className="text-slate-500 font-normal text-xs">$0</span>
+                           )}
+                         </td>
                         <td className="py-3 px-4 font-mono font-extrabold text-base text-cyan-400">
                           {formatCurrency(row.totalTradeValue)}
                         </td>
