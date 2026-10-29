@@ -107,7 +107,17 @@ export function calculateRosTradeValue(
   };
 
   const mult = scarcityMultiplier[upperPos] || 2.5;
-  let perfValue = Math.max(0, fppg - baseline) * mult;
+    // Dynamic Sample-Size Decay: regress early FPPG toward expected baseline
+    const posExpectedCeiling: Record<string, number> = { QB: 22.0, RB: 17.0, WR: 16.0, TE: 12.5 };
+    const ceiling = posExpectedCeiling[upperPos] || 15.0;
+    const adpRatio = Math.max(0, (185 - projectedAdp) / 185);
+    const expectedFppg = baseline + (ceiling - baseline) * Math.pow(adpRatio, 1.8);
+
+    // Weight decays linearly from 30% down to 0% as GP moves from 0 to 10
+    const regressWeight = Math.max(0, (10 - Math.min(gp, 10)) / 10) * 0.30;
+    const blendedFppg = (1 - regressWeight) * fppg + regressWeight * expectedFppg;
+
+    let perfValue = Math.max(0, blendedFppg - baseline) * mult;
 
   // Target volume adjustment
   if ((upperPos === 'WR' || upperPos === 'TE') && targetsPerGame !== undefined) {
@@ -121,8 +131,10 @@ export function calculateRosTradeValue(
   }
 
   // ADP floor for rostered players
-  const adpFloor = projectedAdp < 165 
-    ? Math.max(0, Math.pow(Math.max(0, (185 - projectedAdp) / 185), 2.2) * 35)
+    // Decaying ADP floor: protects early rounds early, decays by week 12
+    const floorDecay = Math.max(0, (12 - Math.min(gp, 12)) / 12);
+    const adpFloor = projectedAdp < 165
+      ? Math.max(0, Math.pow(Math.max(0, (185 - projectedAdp) / 185), 2.2) * 35 * (0.35 + 0.65 * floorDecay))
     : 0;
 
   let rosValue = Math.max(perfValue, adpFloor);
