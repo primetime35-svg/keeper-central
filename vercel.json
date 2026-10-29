@@ -1,0 +1,8 @@
+﻿{
+  "crons": [
+    {
+      "path": "/api/sync-espn",
+      "schedule": "0 10 * * 4"
+    }
+  ]
+}
