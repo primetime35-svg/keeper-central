@@ -142,7 +142,7 @@ export default async function WaiverWirePage(props: {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
           <div>
             <div className="flex items-center gap-3">
-              <span className="text-3xl">???</span>
+              <span className="text-3xl">&#127944;</span>
               <h1 className="text-3xl font-extrabold tracking-tight text-white">Waiver Wire Valuations</h1>
               <span className="text-xs uppercase tracking-widest px-2.5 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-semibold">
                 Available Free Agents
