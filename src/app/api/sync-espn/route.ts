@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 const LEAGUE_ID = process.env.ESPN_LEAGUE_ID;
@@ -44,7 +44,7 @@ function normalizeName(str: string): string {
   let cleaned = str.toLowerCase()
     .replace(/\b(jr|sr|ii|iii|iv|v)\b/gi, '')
     .replace(/\b(d\/st|dst)\b/gi, '')
-    .replace(/[.'’]/g, '')
+    .replace(/[.'’\-]/g, '')
     .trim()
     .replace(/\s+/g, ' ');
 
