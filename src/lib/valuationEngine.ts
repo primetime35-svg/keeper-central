@@ -54,7 +54,8 @@ export function calculateRosTradeValue(
   injuryStatus?: string,
   targetsPerGame?: number,
   gp: number = 6,
-  statusNotes?: string
+  statusNotes?: string,
+  currentWeek: number = 9
 ): number {
   const normStatus = (injuryStatus || '').toLowerCase();
   const normNotes = (statusNotes || '').toLowerCase();
@@ -163,6 +164,12 @@ export function calculateRosTradeValue(
   } else if (normStatus === 'questionable') {
     rosValue *= 0.90;
   }
+
+    // Calendar Decay: Scale ROS trade value based on remaining fantasy regular season weeks (Weeks 1-14)
+  const totalRegularWeeks = 14;
+  const weeksRemaining = Math.max(1, totalRegularWeeks - currentWeek + 1);
+  const timeDecayFactor = weeksRemaining / totalRegularWeeks;
+  rosValue = rosValue * timeDecayFactor;
 
   return Math.round(Math.max(0.5, rosValue) * 100) / 100;
 }
