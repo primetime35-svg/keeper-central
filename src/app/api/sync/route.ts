@@ -9,7 +9,7 @@ const MANAGERS = [
 
 const PRESEASON_EXPERT_ADP_2026: Record<string, number> = {
   "jahmyr gibbs": 1, "bijan robinson": 2, "jamarr chase": 3, "puka nacua": 4,
-  "christian mccaffrey": 5, "jonathan taylor": 6, "jaxon smith-njigba": 7, "amon-ra st brown": 8,
+  "christian mccaffrey": 5, "jonathan taylor": 6, "jaxon smith njigba": 7, "amon-ra st brown": 8,
   "james cook": 9, "ceedee lamb": 10, "justin jefferson": 11, "devon achane": 12,
   "saquon barkley": 13, "kenneth walker": 14, "chase brown": 15, "ashton jeanty": 16,
   "derrick henry": 17, "drake london": 18, "omarion hampton": 19, "josh allen": 20,
@@ -82,8 +82,18 @@ function normalizeName(str: string): string {
   return cleaned;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const authHeader = request.headers.get('authorization');
+    const expectedAuth = `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && authHeader !== expectedAuth) {
+      return NextResponse.json(
+        { error: 'Unauthorized: Invalid or missing Authorization header' },
+        { status: 401 }
+      );
+    }
+
     let { data: league } = await supabase
       .from('leagues')
       .select('id')
@@ -127,11 +137,11 @@ export async function GET() {
       );
     }
 
-      const { data: consensusData } = await supabase.from('consensus_adp').select('normalized_name, consensus_adp');
-      const consensusMap = new Map<string, number>(
-        (consensusData || []).map((row: any) => [row.normalized_name, Number(row.consensus_adp)])
-      );
-      console.log('[SYNC] Loaded consensus ADP map successfully');
+    const { data: consensusData } = await supabase.from('consensus_adp').select('normalized_name, consensus_adp');
+    const consensusMap = new Map<string, number>(
+      (consensusData || []).map((row: any) => [row.normalized_name, Number(row.consensus_adp)])
+    );
+    console.log('[SYNC] Loaded consensus ADP map successfully');
 
     const [playersRes, statsRes] = await Promise.all([
       fetch('https://api.sleeper.app/v1/players/nfl'),

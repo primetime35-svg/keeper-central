@@ -1,9 +1,12 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+﻿{
   "crons": [
     {
       "path": "/api/sync-espn",
-      "schedule": "0 10 * * 4"
+      "schedule": "0 14 * * 4"
+    },
+    {
+      "path": "/api/sync",
+      "schedule": "0 8 * * 2"
     }
   ]
 }
